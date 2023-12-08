@@ -36,7 +36,7 @@ namespace The_Lyre
 
             harmony.PatchAll(typeof(TestClass));
             harmony.PatchAll(typeof(StartofRoundPatch));
-            harmony.PatchAll(typeof(AudiosourcePatch));
+            harmony.PatchAll(typeof(DoorsOpenPatch));
             //harmony.PatchAll(typeof(StartofRoundPatch));
         }
     }

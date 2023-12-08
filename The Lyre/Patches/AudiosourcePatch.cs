@@ -23,11 +23,8 @@ namespace The_Lyre.Patches
         
         public static void Postfix(ref List<EnemyAI> ___SpawnedEnemies, ref StartOfRound ___playersManager)
         {
-                foreach(PlayerControllerB obj in ___playersManager.allPlayerScripts)
-                {
-                    Debug.Log($"******Player is: {obj.playerUsername}");
-                } 
-                
+
+
         }
     }         
 }

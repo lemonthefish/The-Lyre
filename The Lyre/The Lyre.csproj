@@ -72,6 +72,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Patches\AudiosourcePatch.cs" />
+    <Compile Include="Patches\DoorsOpenPatch.cs" />
     <Compile Include="Patches\StartofRoundPatch.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
