@@ -8,24 +8,22 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.IO;
-using Unity.Netcode;
 using System.Collections;
 using Dissonance.Integrations.Unity_NFGO;
 using System.Runtime.CompilerServices;
 
 namespace The_Lyre.Patches
 {
-    [HarmonyPatch(typeof(NfgoPlayer))]
+    [HarmonyPatch(typeof(RoundManager))]
     internal class AudiosourcePatch
     {
 
-        [HarmonyPatch("Position")]
+        [HarmonyPatch(nameof(RoundManager.SpawnEnemyGameObject))]
         [HarmonyPostfix]
         
-        public static void Postfix(ref Vector3 __result)
+        public static void Postfix(ref List<EnemyAI> ___SpawnedEnemies, ref StartOfRound ___playersManager)
         {
-            Debug.Log($"Current audio pos = {__result}; New audio pos = {__result + new Vector3(10f, 0f, 0f)}");
-            __result = new Vector3(__result.x + 10f, __result.y, __result.z);
+            ___SpawnedEnemies.Last().creatureVoice = ___playersManager.allPlayerScripts[0].currentVoiceChatAudioSource;
         }
     }         
 }
