@@ -23,7 +23,15 @@ namespace The_Lyre.Patches
         
         public static void Postfix(ref List<EnemyAI> ___SpawnedEnemies, ref StartOfRound ___playersManager)
         {
-            ___SpawnedEnemies.Last().creatureVoice = ___playersManager.allPlayerScripts[0].currentVoiceChatAudioSource;
+            if (___SpawnedEnemies.Last().creatureVoice == null)
+            {
+                foreach(PlayerControllerB obj in ___playersManager.allPlayerScripts)
+                {
+                    Debug.Log($"******Player is: {obj.playerUsername}");
+                }
+                
+            }
+                
         }
     }         
 }

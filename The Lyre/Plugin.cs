@@ -35,6 +35,7 @@ namespace The_Lyre
             mls.LogInfo("The test mod has awoken \r");
 
             harmony.PatchAll(typeof(TestClass));
+            harmony.PatchAll(typeof(StartofRoundPatch));
             harmony.PatchAll(typeof(AudiosourcePatch));
             //harmony.PatchAll(typeof(StartofRoundPatch));
         }
