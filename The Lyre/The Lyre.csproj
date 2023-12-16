@@ -40,6 +40,7 @@
     <Reference Include="BepInEx">
       <HintPath>D:\SteamLibrary\steamapps\common\Dev Company\BepInEx\core\BepInEx.dll</HintPath>
     </Reference>
+    <Reference Include="DissonanceVoip, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null" />
     <Reference Include="LC_API">
       <HintPath>D:\SteamLibrary\steamapps\common\Dev Company\BepInEx\plugins\LC_API.dll</HintPath>
     </Reference>

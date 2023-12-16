@@ -22,13 +22,7 @@ namespace The_Lyre.Patches
         
         static void ShipDoorsPatch(ref PlayerControllerB[] ___allPlayerScripts)
         {
-            AudioSource temp = ___allPlayerScripts[0].currentVoiceChatAudioSource;
-            ___allPlayerScripts[0].currentVoiceChatAudioSource = ___allPlayerScripts[1].currentVoiceChatAudioSource;
-            ___allPlayerScripts[1].currentVoiceChatAudioSource = temp;
 
-            PlayerVoiceIngameSettings temp2 = ___allPlayerScripts[0].currentVoiceChatIngameSettings;
-            ___allPlayerScripts[0].currentVoiceChatIngameSettings = ___allPlayerScripts[1].currentVoiceChatIngameSettings;
-            ___allPlayerScripts[1].currentVoiceChatIngameSettings = temp2;
         }
     }         
 }

@@ -14,17 +14,15 @@ using System.Runtime.CompilerServices;
 
 namespace The_Lyre.Patches
 {
-    [HarmonyPatch(typeof(RoundManager))]
-    internal class AudiosourcePatch
+    [HarmonyPatch(typeof(NfgoPlayer))]
+    
+    class AudiosourcePatch
     {
 
-        [HarmonyPatch(nameof(RoundManager.SpawnEnemyGameObject))]
-        [HarmonyPostfix]
-        
-        public static void Postfix(ref List<EnemyAI> ___SpawnedEnemies, ref StartOfRound ___playersManager)
+        [HarmonyPatch("Position", MethodType.Getter)]
+        static void Postfix(ref Vector3 __result)
         {
-
-
+            __result.Set(0f,0f,0f);
         }
     }         
 }

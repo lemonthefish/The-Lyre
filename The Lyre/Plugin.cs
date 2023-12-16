@@ -8,6 +8,7 @@ using System.Text;
 using System.Threading.Tasks;
 using The_Lyre.Patches;
 
+
 namespace The_Lyre
 {
     [BepInPlugin(modGUID, modName, modVersion)]
@@ -35,8 +36,8 @@ namespace The_Lyre
             mls.LogInfo("The test mod has awoken \r");
 
             harmony.PatchAll(typeof(TestClass));
-            harmony.PatchAll(typeof(StartofRoundPatch));
-            harmony.PatchAll(typeof(DoorsOpenPatch));
+            harmony.PatchAll(typeof(AudiosourcePatch));
+            //harmony.PatchAll(typeof(DoorsOpenPatch));
             //harmony.PatchAll(typeof(StartofRoundPatch));
         }
     }
