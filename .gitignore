@@ -3,6 +3,12 @@
 ##
 ## Get latest from https://github.com/github/gitignore/blob/master/VisualStudio.gitignore
 
+# Ignore AssemblyInfo. (Default properties were used but this may cause issues)
+AssemblyInfo.cs
+
+# Ignore Assets
+assets/
+
 # User-specific files
 *.rsuser
 *.suo
@@ -360,4 +366,4 @@ MigrationBackup/
 .ionide/
 
 # Fody - auto-generated XML schema
-FodyWeavers.xsd
+FodyWeavers.xsddebug.log 
