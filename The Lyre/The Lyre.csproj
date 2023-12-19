@@ -72,9 +72,10 @@
     </Reference>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Patches\Lyre.cs" />
     <Compile Include="Patches\AudiosourcePatch.cs" />
     <Compile Include="Patches\DoorsOpenPatch.cs" />
+    <Compile Include="Patches\GameNetworkManagerPatch.cs" />
+    <Compile Include="Patches\PlayerControllerPatch.cs" />
     <Compile Include="Patches\StartofRoundPatch.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

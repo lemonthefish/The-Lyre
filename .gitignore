@@ -5,6 +5,7 @@
 
 # Ignore AssemblyInfo. (Default properties were used but this may cause issues)
 AssemblyInfo.cs
+/The Lyre/Properties/AssemblyInfo.cs
 
 # Ignore Assets
 assets/
@@ -367,6 +368,4 @@ MigrationBackup/
 
 # Fody - auto-generated XML schema
 FodyWeavers.xsddebug.log 
-/The Lyre/Properties/AssemblyInfo.cs
-/The Lyre/Properties/AssemblyInfo.cs
-/The Lyre/Properties/AssemblyInfo.cs
+
