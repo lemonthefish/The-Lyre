@@ -11,6 +11,7 @@ using The_Lyre.Properties;
 using The_Lyre.Patches;
 using UnityEngine;
 using UnityEngine.Rendering;
+using System.Reflection;
 
 
 namespace The_Lyre
@@ -18,6 +19,7 @@ namespace The_Lyre
     [BepInPlugin(modGUID, modName, modVersion)]
     public class TheLyre : BaseUnityPlugin
     {
+
         //mod version info
         private const string modGUID = "Lemons.TheLyre";
         private const string modName = "The Lyre";
@@ -40,26 +42,49 @@ namespace The_Lyre
         internal ManualLogSource mls;
 
         //debug mode
-        bool debugMode = true;
+        readonly static bool debugMode = true;
 
         private void Awake()
         {
+            //Required code from unitynetcodeweaver
+            var types = Assembly.GetExecutingAssembly().GetTypes();
+            foreach (var type in types)
+            {
+                var methods = type.GetMethods(BindingFlags.NonPublic | BindingFlags.Instance | BindingFlags.Static);
+                foreach (var method in methods)
+                {
+                    var attributes = method.GetCustomAttributes(typeof(RuntimeInitializeOnLoadMethodAttribute), false);
+                    if (attributes.Length > 0)
+                    {
+                        method.Invoke(null, null);
+                    }
+                }
+            }
+
+            //Load assets
             AssetBundle lyreAssetBundle = AssetBundle.LoadFromMemory(Properties.Resources.customplayerbundle);
             LyrePrefab = lyreAssetBundle.LoadAsset<GameObject>("Assets/_CustomPlayer/CustomPlayerAssets/Lyre.prefab");
-            LyrePrefab.AddComponent<LyreAi>();
-            //LyreNetworkerPrefab = lyreAssetBundle.LoadAsset<GameObject>("Assets/_CustomPlayer/CustomPlayerAssets/LyreNetworkPrefab.prefab");
 
             //Some setup required so we can utilize pre-made spawning methods
             LyreEnemyType = ScriptableObject.CreateInstance<EnemyType>();
-            LyreEnemyType.name = "Lyre";
+            LyreEnemyType.enemyName = "Lyre";
             LyreEnemyType.MaxCount = 10;
-            LyreEnemyType.enemyPrefab = TheLyre.LyrePrefab;
+            LyreEnemyType.enemyPrefab = LyrePrefab;
+            LyreEnemyType.isOutsideEnemy = false;
+            LyreEnemyType.canSeeThroughFog = false;
+            LyreEnemyType.doorSpeedMultiplier = 1;
 
             Lyre = new SpawnableEnemyWithRarity()
             {
                 enemyType = LyreEnemyType,
                 rarity = 1
             };
+
+            //Add AI component and assign necessary variables
+            LyreAI lyreAIComp = LyrePrefab.AddComponent<LyreAI>();
+            LyrePrefab.AddComponent<LyreNetworker>();
+            lyreAIComp.enemyType = LyreEnemyType;
+            lyreAIComp.eye = lyreAIComp.transform.root;
 
             if (Instance == null)
             {
@@ -92,17 +117,10 @@ namespace The_Lyre
             }
             harmony.PatchAll(typeof(TheLyre));
             harmony.PatchAll(typeof(AudiosourcePatch));
+            harmony.PatchAll(typeof(GameNetworkManagerPatch));
             //harmony.PatchAll(typeof(DoorsOpenPatch));
             //harmony.PatchAll(typeof(StartofRoundPatch));
             //harmony.PatchAll(typeof(RoundManagerPatch));
-        }
-
-        public class LyreAi : EnemyAI
-        {
-            public LyreAi()
-            {
-
-            }
         }
 
         //Method that handles spawning the custom enemy.
@@ -134,7 +152,7 @@ namespace The_Lyre
             //grab player object
             foreach (GameObject obj in playerObjs)
             {
-                if (obj.name == "Player")
+                if (obj.name == "Player (1)")
                 {
                     playerObj = obj.transform.root.gameObject;
                     break;

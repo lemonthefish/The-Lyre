@@ -16,7 +16,7 @@ namespace The_Lyre.Patches
         static void StartPatch()
         {
             //Register the networker prefab, whatever that means
-            GameNetworkManager.Instance.GetComponent<NetworkManager>().AddNetworkPrefab(TheLyre.LyreNetworkerPrefab);
+            NetworkManager.Singleton.AddNetworkPrefab(TheLyre.LyrePrefab);
         }
     }
 }
