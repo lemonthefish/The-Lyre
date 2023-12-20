@@ -230,7 +230,6 @@ public class LyreAI : EnemyAI
                         {
                             noticePlayerTimer = 0f;
                             lostPlayerInChase = false;
-                            MakeScreechNoiseServerRpc();
                             if (playerControllerB != targetPlayer)
                             {
                                 SetMovingTowardsTargetPlayer(playerControllerB);
@@ -275,38 +274,8 @@ public class LyreAI : EnemyAI
 
     private void CalculateAgentSpeed()
     {
-        if (stunNormalizedTimer >= 0f)
-        {
-            agent.speed = 0.1f;
-            agent.acceleration = 200f;
-            creatureAnimator.SetBool("stunned", value: true);
-            return;
-        }
-        creatureAnimator.SetBool("stunned", value: false);
-        creatureAnimator.SetFloat("speedMultiplier", Vector3.ClampMagnitude(base.transform.position - previousPosition, 1f).sqrMagnitude / (Time.deltaTime / 2.25f));
         float num = (previousPosition - base.transform.position).sqrMagnitude / (Time.deltaTime / 1.4f);
-        if (base.IsOwner && previousVelocity - num > Mathf.Clamp(num * 0.25f, 2f, 100f))
-        {
-            agent.speed = 0f;
-            if (currentBehaviourStateIndex == 1)
-            {
-                if (wallCollisionSFXDebounce > 0.5f)
-                {
-                    if (base.IsServer)
-                    {
-                        CollideWithWallServerRpc();
-                    }
-                    else
-                    {
-                        CollideWithWallClientRpc();
-                    }
-                }
-                wallCollisionSFXDebounce = 0f;
-            }
-        }
-        wallCollisionSFXDebounce += Time.deltaTime;
-        previousVelocity = num;
-        previousPosition = base.transform.position;
+      
         if (currentBehaviourStateIndex == 0)
         {
             agent.speed = 8f;
@@ -320,54 +289,6 @@ public class LyreAI : EnemyAI
         }
     }
 
-    [ServerRpc(RequireOwnership = false)]
-    public void CollideWithWallServerRpc()
-    {
-        NetworkManager networkManager = base.NetworkManager;
-        if ((object)networkManager != null && networkManager.IsListening)
-        {
-            if (__rpc_exec_stage != __RpcExecStage.Server && (networkManager.IsClient || networkManager.IsHost))
-            {
-                ServerRpcParams serverRpcParams = default(ServerRpcParams);
-                FastBufferWriter bufferWriter = __beginSendServerRpc(3661877694u, serverRpcParams, RpcDelivery.Reliable);
-                __endSendServerRpc(ref bufferWriter, 3661877694u, serverRpcParams, RpcDelivery.Reliable);
-            }
-            if (__rpc_exec_stage == __RpcExecStage.Server && (networkManager.IsServer || networkManager.IsHost))
-            {
-                CollideWithWallClientRpc();
-            }
-        }
-    }
-
-    [ClientRpc]
-    public void CollideWithWallClientRpc()
-    {
-        NetworkManager networkManager = base.NetworkManager;
-        if ((object)networkManager == null || !networkManager.IsListening)
-        {
-            return;
-        }
-        if (__rpc_exec_stage != __RpcExecStage.Client && (networkManager.IsServer || networkManager.IsHost))
-        {
-            ClientRpcParams clientRpcParams = default(ClientRpcParams);
-            FastBufferWriter bufferWriter = __beginSendClientRpc(461029090u, clientRpcParams, RpcDelivery.Reliable);
-            __endSendClientRpc(ref bufferWriter, 461029090u, clientRpcParams, RpcDelivery.Reliable);
-        }
-        if (__rpc_exec_stage == __RpcExecStage.Client && (networkManager.IsClient || networkManager.IsHost))
-        {
-            RoundManager.PlayRandomClip(creatureSFX, hitWallSFX);
-            float num = Vector3.Distance(GameNetworkManager.Instance.localPlayerController.transform.position, base.transform.position);
-            if (num < 15f)
-            {
-                HUDManager.Instance.ShakeCamera(ScreenShakeType.Big);
-            }
-            else if (num < 24f)
-            {
-                HUDManager.Instance.ShakeCamera(ScreenShakeType.Small);
-            }
-        }
-    }
-
     private void CheckForVeryClosePlayer()
     {
         if (Physics.OverlapSphereNonAlloc(base.transform.position, 1.5f, nearPlayerColliders, 8, QueryTriggerInteraction.Ignore) > 0)
@@ -377,55 +298,6 @@ public class LyreAI : EnemyAI
             {
                 targetPlayer = component;
             }
-        }
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void MakeScreechNoiseServerRpc()
-    {
-        NetworkManager networkManager = base.NetworkManager;
-        if ((object)networkManager != null && networkManager.IsListening)
-        {
-            if (__rpc_exec_stage != __RpcExecStage.Server && (networkManager.IsClient || networkManager.IsHost))
-            {
-                ServerRpcParams serverRpcParams = default(ServerRpcParams);
-                FastBufferWriter bufferWriter = __beginSendServerRpc(2716706397u, serverRpcParams, RpcDelivery.Reliable);
-                __endSendServerRpc(ref bufferWriter, 2716706397u, serverRpcParams, RpcDelivery.Reliable);
-            }
-            if (__rpc_exec_stage == __RpcExecStage.Server && (networkManager.IsServer || networkManager.IsHost))
-            {
-                MakeScreechNoiseClientRpc();
-            }
-        }
-    }
-
-    [ClientRpc]
-    public void MakeScreechNoiseClientRpc()
-    {
-        NetworkManager networkManager = base.NetworkManager;
-        if ((object)networkManager != null && networkManager.IsListening)
-        {
-            if (__rpc_exec_stage != __RpcExecStage.Client && (networkManager.IsServer || networkManager.IsHost))
-            {
-                ClientRpcParams clientRpcParams = default(ClientRpcParams);
-                FastBufferWriter bufferWriter = __beginSendClientRpc(3572529702u, clientRpcParams, RpcDelivery.Reliable);
-                __endSendClientRpc(ref bufferWriter, 3572529702u, clientRpcParams, RpcDelivery.Reliable);
-            }
-            if (__rpc_exec_stage == __RpcExecStage.Client && (networkManager.IsClient || networkManager.IsHost))
-            {
-                MakeScreech();
-            }
-        }
-    }
-
-    public void MakeScreech()
-    {
-        int num = Random.Range(0, longRoarSFX.Length);
-        creatureVoice.PlayOneShot(longRoarSFX[num]);
-        WalkieTalkie.TransmitOneShotAudio(creatureVoice, longRoarSFX[num]);
-        if (Vector3.Distance(GameNetworkManager.Instance.localPlayerController.transform.position, base.transform.position) < 15f)
-        {
-            GameNetworkManager.Instance.localPlayerController.JumpToFearLevel(0.75f);
         }
     }
 

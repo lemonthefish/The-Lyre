@@ -110,7 +110,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
-    <PostBuildEvent>cd /d "D:\SteamLibrary\steamapps\common\Dev Company\NetcodePatcher-2.4.0"
+    <PostBuildEvent>cd /d "D:\NetcodePatcher"
 NetcodePatcher.dll $(TargetDir) deps/
 Xcopy /y "$(TargetPath)" "D:\SteamLibrary\steamapps\common\Dev Company\BepInEx\plugins"</PostBuildEvent>
   </PropertyGroup>

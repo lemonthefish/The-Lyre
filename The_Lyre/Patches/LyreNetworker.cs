@@ -32,7 +32,7 @@ public class LyreNetworker : NetworkBehaviour
     [ClientRpc]
     public void BeginChasingPlayerClientRpc(int playerObjectId)
     {
-        ThisLyreAI.MakeScreech();
+        Debug.Log($"Number of states is: {ThisLyreAI.enemyBehaviourStates.Length}");
         ThisLyreAI.SwitchToBehaviourStateOnLocalClient(1);
         ThisLyreAI.SetMovingTowardsTargetPlayer(StartOfRound.Instance.allPlayerScripts[playerObjectId]);
     }

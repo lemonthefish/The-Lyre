@@ -37,6 +37,7 @@ namespace The_Lyre
 
         public static EnemyType LyreEnemyType;
         public static SpawnableEnemyWithRarity Lyre;
+        public static EnemyBehaviourState[] LyreBehaviorStates;
         
         //logging
         internal ManualLogSource mls;
@@ -85,6 +86,19 @@ namespace The_Lyre
             LyrePrefab.AddComponent<LyreNetworker>();
             lyreAIComp.enemyType = LyreEnemyType;
             lyreAIComp.eye = lyreAIComp.transform.root;
+
+            lyreAIComp.enemyBehaviourStates = new EnemyBehaviourState[2]
+            {
+                new EnemyBehaviourState()
+                {
+                    name = "hunting"
+                },
+                new EnemyBehaviourState()
+                {
+                name = "attacking"
+                }
+
+            };
 
             if (Instance == null)
             {
