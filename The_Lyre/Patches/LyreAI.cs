@@ -60,7 +60,7 @@ public class LyreAI : EnemyAI
 
     private bool pullingSecondLimb;
 
-    private float agentSpeedWithNegative;
+    public float agentSpeedWithNegative;
 
     private Vector3 lastPositionOfSeenPlayer;
 
@@ -69,6 +69,9 @@ public class LyreAI : EnemyAI
         base.Start();
         nearPlayerColliders = new Collider[4];
         networker = GetComponent<LyreNetworker>();
+        creatureAnimator = GetComponentInChildren<Animator>();
+        creatureAnimator.SetBool("Walking", true);
+        creatureAnimator.SetLayerWeight(creatureAnimator.GetLayerIndex("HoldingItemsBothHands"), 1f);
     }
 
     public override void DoAIInterval()
@@ -176,6 +179,10 @@ public class LyreAI : EnemyAI
                         if (noticePlayerTimer > 0.2f && !beginningChasingThisClient)
                         {
                             beginningChasingThisClient = true;
+                            //TODO - cleanup prefab animator FSM since this is not necessary
+                            creatureAnimator.SetBool("HoldPatcherTool", true);
+                            creatureAnimator.SetBool("cancelHolding", false);
+                            creatureAnimator.SetTrigger("SwitchHoldAnimationTwoHanded");
                             networker.BeginChasingPlayerServerRpc((int)GameNetworkManager.Instance.localPlayerController.playerClientId);
                             ChangeOwnershipOfEnemy(playerControllerB3.actualClientId);
                             Debug.Log("Begin chasing on local client");
@@ -242,6 +249,8 @@ public class LyreAI : EnemyAI
                             noticePlayerTimer -= 0.075f;
                             if (noticePlayerTimer < -15f)
                             {
+                                //TODO change prefab animator, this is unnecessary
+                                creatureAnimator.SetBool("HoldPatcherTool", false);
                                 SwitchToBehaviourState(0);
                             }
                         }
@@ -312,55 +321,9 @@ public class LyreAI : EnemyAI
                 timeSinceHittingPlayer = 0f;
                 playerControllerB.DamagePlayer(40, hasDamageSFX: true, callRPC: true, CauseOfDeath.Mauling);
                 agent.speed = 0f;
-                HitPlayerServerRpc((int)GameNetworkManager.Instance.localPlayerController.playerClientId);
+                networker.HitPlayerServerRpc((int)GameNetworkManager.Instance.localPlayerController.playerClientId);
                 GameNetworkManager.Instance.localPlayerController.JumpToFearLevel(1f);
             }
-        }
-    }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void HitPlayerServerRpc(int playerId)
-    {
-        NetworkManager networkManager = base.NetworkManager;
-        if ((object)networkManager != null && networkManager.IsListening)
-        {
-            if (__rpc_exec_stage != __RpcExecStage.Server && (networkManager.IsClient || networkManager.IsHost))
-            {
-                ServerRpcParams serverRpcParams = default(ServerRpcParams);
-                FastBufferWriter bufferWriter = __beginSendServerRpc(3352518565u, serverRpcParams, RpcDelivery.Reliable);
-                BytePacker.WriteValueBitPacked(bufferWriter, playerId);
-                __endSendServerRpc(ref bufferWriter, 3352518565u, serverRpcParams, RpcDelivery.Reliable);
-            }
-            if (__rpc_exec_stage == __RpcExecStage.Server && (networkManager.IsServer || networkManager.IsHost))
-            {
-                HitPlayerClientRpc(playerId);
-            }
-        }
-    }
-
-    [ClientRpc]
-    public void HitPlayerClientRpc(int playerId)
-    {
-        NetworkManager networkManager = base.NetworkManager;
-        if ((object)networkManager == null || !networkManager.IsListening)
-        {
-            return;
-        }
-        if (__rpc_exec_stage != __RpcExecStage.Client && (networkManager.IsServer || networkManager.IsHost))
-        {
-            ClientRpcParams clientRpcParams = default(ClientRpcParams);
-            FastBufferWriter bufferWriter = __beginSendClientRpc(880045462u, clientRpcParams, RpcDelivery.Reliable);
-            BytePacker.WriteValueBitPacked(bufferWriter, playerId);
-            __endSendClientRpc(ref bufferWriter, 880045462u, clientRpcParams, RpcDelivery.Reliable);
-        }
-        if (__rpc_exec_stage == __RpcExecStage.Client && (networkManager.IsClient || networkManager.IsHost))
-        {
-            if (!inSpecialAnimation)
-            {
-                creatureAnimator.SetTrigger("HitPlayer");
-            }
-            creatureVoice.PlayOneShot(bitePlayerSFX);
-            agentSpeedWithNegative = Random.Range(0.25f, 4f);
         }
     }
 

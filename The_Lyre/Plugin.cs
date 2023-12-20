@@ -91,11 +91,16 @@ namespace The_Lyre
             {
                 new EnemyBehaviourState()
                 {
-                    name = "hunting"
+                    name = "Hunting",
+                    parameterString = "cancelHolding",
+                    boolValue = true,
+                    IsAnimTrigger = false
                 },
                 new EnemyBehaviourState()
                 {
-                name = "attacking"
+                    name = "Attacking",
+                    parameterString = "SwitchHoldAnimationTwoHanded",
+                    IsAnimTrigger = true
                 }
 
             };

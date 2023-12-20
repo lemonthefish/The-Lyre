@@ -1,5 +1,4 @@
-﻿using System;
-using Unity.Netcode;
+﻿using Unity.Netcode;
 using UnityEngine;
 
 public class LyreNetworker : NetworkBehaviour
@@ -21,8 +20,6 @@ public class LyreNetworker : NetworkBehaviour
         base.OnNetworkSpawn();
     }
 
-
-
     [ServerRpc(RequireOwnership = false)]
     public void BeginChasingPlayerServerRpc(int playerObjectId)
     {
@@ -32,9 +29,26 @@ public class LyreNetworker : NetworkBehaviour
     [ClientRpc]
     public void BeginChasingPlayerClientRpc(int playerObjectId)
     {
-        Debug.Log($"Number of states is: {ThisLyreAI.enemyBehaviourStates.Length}");
         ThisLyreAI.SwitchToBehaviourStateOnLocalClient(1);
         ThisLyreAI.SetMovingTowardsTargetPlayer(StartOfRound.Instance.allPlayerScripts[playerObjectId]);
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void HitPlayerServerRpc(int playerId)
+    {
+        HitPlayerClientRpc(playerId);
+    }
+
+    [ClientRpc]
+    public void HitPlayerClientRpc(int playerId)
+    {
+        if (!ThisLyreAI.inSpecialAnimation)
+        {
+            ThisLyreAI.creatureAnimator.SetTrigger("HitPlayer");
+        }
+        //TODO - add bite/attack sound
+        //ThisLyreAI.creatureVoice.PlayOneShot(bitePlayerSFX);
+        ThisLyreAI.agentSpeedWithNegative = Random.Range(0.25f, 4f);
     }
 }
 
